@@ -77,9 +77,9 @@
                 type: "GET",
                 url: "scm/gitfile",
                 data: {
-                    repoUrl: $('#inputUrl').val(),
-                    filepath: $('#inputFileName').val(),
-                    ref:  $('#inputReference').val(),
+                    repoUrl: $('#inputUrl').val()  === ""?$('#inputUrl').attr("placeholder"):$('#inputUrl').val(),
+                    filepath: $('#inputFileName').val()=== ""?$('#inputFileName').attr("placeholder"):$('#inputFileName').val(),
+                    ref:  $('#inputReference').val()=== ""?$('#inputReference').attr("placeholder"):$('#inputReference').val(),
                 },
                 success: function(msg){
                     $('#fileContent').html("<div class=\"container bcontent\"><pre>"+msg+"</pre></div>").show();
