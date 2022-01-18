@@ -14,53 +14,161 @@
 package gitfile
 
 import (
+	"bytes"
+	"encoding/json"
 	"fmt"
-	"testing"
-
 	"github.com/stretchr/testify/assert"
+	"io/ioutil"
+	"net/http"
+	"testing"
 )
 
 func TestGetFileHead(t *testing.T) {
-	r1, err := Detect("https://github.com/redhat-appstudio/service-provider-integration-operator", "Makefile", "HEAD")
+	githubReached := false
+	mockResponse, _ := json.Marshal(map[string]interface{}{
+		"name":         "myfile",
+		"size":         582,
+		"download_url": "https://raw.githubusercontent.com/foo-user/foo-repo/HEAD/myfile",
+	})
 
+	client := &http.Client{
+		Transport: fakeRoundTrip(func(r *http.Request) (*http.Response, error) {
+			if r.URL.String() == "https://api.github.com/repos/foo-user/foo-repo/contents/myfile?ref=HEAD" {
+				githubReached = true
+				return &http.Response{
+					StatusCode: 200,
+					Header:     http.Header{},
+					Body:       ioutil.NopCloser(bytes.NewBuffer(mockResponse)),
+					Request:    r,
+				}, nil
+			}
+
+			return nil, fmt.Errorf("unexpected request to: %s", r.URL.String())
+		}),
+	}
+
+	r1, err := detect("https://github.com/foo-user/foo-repo", "myfile", "HEAD", client)
 	if err != nil {
 		t.Errorf("unexpected error: %v", err)
 	}
-	assert.Equal(t, r1, "https://raw.githubusercontent.com/redhat-appstudio/service-provider-integration-operator/HEAD/Makefile")
+	assert.True(t, githubReached)
+	assert.Equal(t, "https://raw.githubusercontent.com/foo-user/foo-repo/HEAD/myfile", r1)
 }
 
-func TestGetFileHead2(t *testing.T) {
-	r1, err := Detect("https://github.com/redhat-appstudio/service-provider-integration-operator.git", "Makefile", "HEAD")
+func TestGetFileHeadGitSuffix(t *testing.T) {
+	githubReached := false
+	mockResponse, _ := json.Marshal(map[string]interface{}{
+		"name":         "myfile",
+		"size":         582,
+		"download_url": "https://raw.githubusercontent.com/foo-user/foo-repo/HEAD/myfile",
+	})
 
+	client := &http.Client{
+		Transport: fakeRoundTrip(func(r *http.Request) (*http.Response, error) {
+			if r.URL.String() == "https://api.github.com/repos/foo-user/foo-repo/contents/myfile?ref=HEAD" {
+				githubReached = true
+				return &http.Response{
+					StatusCode: 200,
+					Header:     http.Header{},
+					Body:       ioutil.NopCloser(bytes.NewBuffer(mockResponse)),
+					Request:    r,
+				}, nil
+			}
+
+			return nil, fmt.Errorf("unexpected request to: %s", r.URL.String())
+		}),
+	}
+
+	r1, err := detect("https://github.com/foo-user/foo-repo.git", "myfile", "HEAD", client)
 	if err != nil {
 		t.Errorf("unexpected error: %v", err)
 	}
-	assert.Equal(t, r1, "https://raw.githubusercontent.com/redhat-appstudio/service-provider-integration-operator/HEAD/Makefile")
+	assert.True(t, githubReached)
+	assert.Equal(t, "https://raw.githubusercontent.com/foo-user/foo-repo/HEAD/myfile", r1)
 }
 
 func TestGetFileOnBranch(t *testing.T) {
-	r1, err := Detect("https://github.com/redhat-appstudio/service-provider-integration-operator.git", "Makefile", "v0.1.0")
+	githubReached := false
+	mockResponse, _ := json.Marshal(map[string]interface{}{
+		"name":         "myfile",
+		"size":         582,
+		"download_url": "https://raw.githubusercontent.com/foo-user/foo-repo/v0.1.0/myfile",
+	})
 
+	client := &http.Client{
+		Transport: fakeRoundTrip(func(r *http.Request) (*http.Response, error) {
+			if r.URL.String() == "https://api.github.com/repos/foo-user/foo-repo/contents/myfile?ref=v0.1.0" {
+				githubReached = true
+				return &http.Response{
+					StatusCode: 200,
+					Header:     http.Header{},
+					Body:       ioutil.NopCloser(bytes.NewBuffer(mockResponse)),
+					Request:    r,
+				}, nil
+			}
+
+			return nil, fmt.Errorf("unexpected request to: %s", r.URL.String())
+		}),
+	}
+
+	r1, err := detect("https://github.com/foo-user/foo-repo", "myfile", "v0.1.0", client)
 	if err != nil {
 		t.Errorf("unexpected error: %v", err)
 	}
-	assert.Equal(t, r1, "https://raw.githubusercontent.com/redhat-appstudio/service-provider-integration-operator/v0.1.0/Makefile")
+	assert.True(t, githubReached)
+	assert.Equal(t, "https://raw.githubusercontent.com/foo-user/foo-repo/v0.1.0/myfile", r1)
 }
 
 func TestGetFileOnCommitId(t *testing.T) {
-	r1, err := Detect("https://github.com/redhat-appstudio/service-provider-integration-operator.git", "Makefile", "efaf08a367921ae130c524db4a531b7696b7d967")
 
+	githubReached := false
+	mockResponse, _ := json.Marshal(map[string]interface{}{
+		"name":         "myfile",
+		"size":         582,
+		"download_url": "https://raw.githubusercontent.com/foo-user/foo-repo/efaf08a367921ae130c524db4a531b7696b7d967/myfile",
+	})
+
+	client := &http.Client{
+		Transport: fakeRoundTrip(func(r *http.Request) (*http.Response, error) {
+			if r.URL.String() == "https://api.github.com/repos/foo-user/foo-repo/contents/myfile?ref=efaf08a367921ae130c524db4a531b7696b7d967" {
+				githubReached = true
+				return &http.Response{
+					StatusCode: 200,
+					Header:     http.Header{},
+					Body:       ioutil.NopCloser(bytes.NewBuffer(mockResponse)),
+					Request:    r,
+				}, nil
+			}
+
+			return nil, fmt.Errorf("unexpected request to: %s", r.URL.String())
+		}),
+	}
+
+	r1, err := detect("https://github.com/foo-user/foo-repo", "myfile", "efaf08a367921ae130c524db4a531b7696b7d967", client)
 	if err != nil {
 		t.Errorf("unexpected error: %v", err)
 	}
-	assert.Equal(t, r1, "https://raw.githubusercontent.com/redhat-appstudio/service-provider-integration-operator/efaf08a367921ae130c524db4a531b7696b7d967/Makefile")
+	assert.True(t, githubReached)
+	assert.Equal(t, "https://raw.githubusercontent.com/foo-user/foo-repo/efaf08a367921ae130c524db4a531b7696b7d967/myfile", r1)
 }
 
 func TestGetUnexistingFile(t *testing.T) {
-	_, err := Detect("https://github.com/redhat-appstudio/service-provider-integration-operator.git", "Makefile-Non-Exist", "")
+	mockResponse := "{\"message\":\"Not Found\",\"documentation_url\":\"https://docs.github.com/rest/reference/repos#get-repository-content\"}"
 
+	client := &http.Client{
+		Transport: fakeRoundTrip(func(r *http.Request) (*http.Response, error) {
+			return &http.Response{
+				StatusCode: 404,
+				Header:     http.Header{},
+				Body:       ioutil.NopCloser(bytes.NewBuffer([]byte(mockResponse))),
+				Request:    r,
+			}, nil
+		}),
+	}
+
+	_, err := detect("https://github.com/foo-user/foo-repo", "myfile", "efaf08a367921ae130c524db4a531b7696b7d967", client)
 	if err == nil {
 		t.Error("error expected")
 	}
-	assert.Equal(t, "unexpected status code from GitHub API: 404. Response: {\"message\":\"Not Found\",\"documentation_url\":\"https://docs.github.com/rest/reference/repos#get-repository-content\"}", fmt.Sprint(err))
+	assert.Equal(t, fmt.Sprint(err), "unexpected status code from GitHub API: 404. Response: {\"message\":\"Not Found\",\"documentation_url\":\"https://docs.github.com/rest/reference/repos#get-repository-content\"}")
 }

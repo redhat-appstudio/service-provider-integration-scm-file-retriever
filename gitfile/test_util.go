@@ -1,4 +1,4 @@
-// Copyright (c) 2022 Red Hat, Inc.
+// Copyright (c) 2021 Red Hat, Inc.
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
@@ -11,23 +11,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+//go:build !release
+// +build !release
+
 package gitfile
 
-import (
-	"strings"
-)
+import "net/http"
 
-// GitLabScmProvider implements Detector to detect Gitlab URLs.
-type GitLabScmProvider struct{}
+// fakeRoundTrip casts a function into a http.RoundTripper
+type fakeRoundTrip func(r *http.Request) (*http.Response, error)
 
-func (d *GitLabScmProvider) detect(repoUrl, filepath, ref string, opts ...interface{}) (bool, string, error) {
-	if len(repoUrl) == 0 {
-		return false, "", nil
-	}
+var _ http.RoundTripper = fakeRoundTrip(nil)
 
-	if strings.HasPrefix(repoUrl, "https://gitlab.com/") {
-		return true, "", nil
-	}
-
-	return false, "", nil
+func (f fakeRoundTrip) RoundTrip(r *http.Request) (*http.Response, error) {
+	return f(r)
 }
