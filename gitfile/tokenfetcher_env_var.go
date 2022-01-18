@@ -13,7 +13,9 @@
 
 package gitfile
 
-import "os"
+import (
+	"os"
+)
 
 // EnvVarTokenFetcher token fetcher implementation that looks for token in the specific ENV variable.
 type EnvVarTokenFetcher struct{}

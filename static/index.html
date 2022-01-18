@@ -75,17 +75,21 @@
             $.ajax({
                 crossDomain: true,
                 type: "GET",
-                url: "scm/gitfile",
+                //url: "http://localhost:8000/scm/gitfile",
+                url: "/scm/gitfile",
                 data: {
                     repoUrl: $('#inputUrl').val()  === ""?$('#inputUrl').attr("placeholder"):$('#inputUrl').val(),
                     filepath: $('#inputFileName').val()=== ""?$('#inputFileName').attr("placeholder"):$('#inputFileName').val(),
                     ref:  $('#inputReference').val()=== ""?$('#inputReference').attr("placeholder"):$('#inputReference').val(),
                 },
                 success: function(msg){
+                    $('#errorAlert').text("").addClass('d-none')
                     $('#fileContent').html("<div class=\"container bcontent\"><pre>"+msg+"</pre></div>").show();
                 },
                 error: function(jqXHR, exception){
-                    $('#errorAlert').text(jqXHR.responseText);
+                    $('#fileContent').html("<div class=\"container bcontent d-none\"><pre></pre></div>");
+                    $('#errorAlert').removeClass('d-none')
+                    $('#errorAlert').text("Status:"+jqXHR.status + " Message:"+jqXHR.responseText);
                     $('#errorAlert').show();
                 },
                 complete: function(msg){

@@ -67,11 +67,13 @@ func GetFileHandler(w http.ResponseWriter, r *http.Request) {
 	content, err := gitfile.GetFileContents(ctx, repoUrl, filepath, ref, nil)
 	if err != nil {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
+		return
 	}
 
 	_, err = io.Copy(w, content)
 	if err != nil {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
+		return
 	}
 	w.WriteHeader(http.StatusOK)
 }
