@@ -91,6 +91,18 @@ func corsMiddleware(next http.Handler) http.Handler {
 		log.Println("Executing middleware again")
 	})
 }
+func loggingMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// Do stuff here
+		log.Println(r.RequestURI)
+		// Call the next handler, which can be another middleware in the chain, or the final handler.
+		next.ServeHTTP(w, r)
+	})
+}
+
+func SendIndexHtml(w http.ResponseWriter, r *http.Request) {
+	http.ServeFile(w, r, "./static/index.html")
+}
 
 func main() {
 	var wait time.Duration
@@ -100,8 +112,8 @@ func main() {
 	router := mux.NewRouter()
 	router.HandleFunc("/health", OkHandler).Methods("GET")
 	router.HandleFunc("/ready", OkHandler).Methods("GET")
-	router.HandleFunc("/scm/gitfile", GetFileHandler).Queries("repoUrl", "{repoUrl}").Queries("filepath", "{filepath}").Queries("ref", "{ref}").Methods("GET")
-	router.PathPrefix("/").Handler(http.FileServer(http.Dir("./static/")))
+	router.HandleFunc("/spi/scm/gitfile", GetFileHandler).Queries("repoUrl", "{repoUrl}").Queries("filepath", "{filepath}").Queries("ref", "{ref}").Methods("GET")
+	router.HandleFunc("/spi/scm/", SendIndexHtml).Methods("GET")
 
 	srv := &http.Server{
 		Addr: "0.0.0.0:8000",
@@ -110,7 +122,7 @@ func main() {
 		ReadTimeout:  time.Second * 15,
 		IdleTimeout:  time.Second * 60,
 		//Handler:      corsMiddleware(router), // UI testing
-		Handler: router, // Pass our instance of gorilla/mux in.
+		Handler: loggingMiddleware(router), // Pass our instance of gorilla/mux in.
 	}
 
 	// Run our server in a goroutine so that it doesn't block.
