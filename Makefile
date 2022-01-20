@@ -1,5 +1,5 @@
 SPIS_TAG_NAME ?= next
-SPIS_IMAGE_TAG_BASE ?= quay.io/redhat-appstudio/service-provider-integration-scm-file
+SPIS_IMAGE_TAG_BASE ?= quay.io/redhat-appstudio/service-provider-integration-scm-file-retriever-sample-service
 SPIS_IMG ?= $(SPIS_IMAGE_TAG_BASE):$(SPIS_TAG_NAME)
 
 SHELL := bash
@@ -29,6 +29,7 @@ test: fmt fmt_license vet envtest ## Run the unit tests
 	KUBEBUILDER_ASSETS="$(shell $(ENVTEST) use $(ENVTEST_K8S_VERSION) -p path)" go test ./... -cover
 
 run: ## Run the binary
+	cd sample
 	go run server.go
 
 vet: fmt fmt_license ## Run go vet against code.
@@ -37,9 +38,11 @@ vet: fmt fmt_license ## Run go vet against code.
 ##@ Build
 
 build: fmt fmt_license vet ## Builds the binary
-	go build -o bin/spi-oauth server.go
+	cd sample
+	go build -o bin/service-provider-integration-scm-file-retriever-sample-service server.go
 
 docker-build: fmt fmt_license vet ## Builds the docker image. Use the SPI_IMG env var to override the image tag
+	cd sample
 	docker build -t ${SPIS_IMG} .
 
 docker-push: docker-build ## Pushes the image. Use the SPI_IMG env var to override the image tag

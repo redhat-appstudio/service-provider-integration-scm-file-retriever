@@ -24,9 +24,8 @@ import (
 	"os/signal"
 	"time"
 
-	"github.com/redhat-appstudio/service-provider-integration-scm-file-retriever/gitfile"
-
 	"github.com/gorilla/mux"
+	"github.com/redhat-appstudio/service-provider-integration-scm-file-retriever/gitfile"
 )
 
 func OkHandler(w http.ResponseWriter, _ *http.Request) {
@@ -110,7 +109,8 @@ func main() {
 		WriteTimeout: time.Second * 15,
 		ReadTimeout:  time.Second * 15,
 		IdleTimeout:  time.Second * 60,
-		Handler:      corsMiddleware(router), // Pass our instance of gorilla/mux in.
+		//Handler:      corsMiddleware(router), // UI testing
+		Handler: router, // Pass our instance of gorilla/mux in.
 	}
 
 	// Run our server in a goroutine so that it doesn't block.
@@ -139,10 +139,5 @@ func main() {
 	// to finalize based on context cancellation.
 	log.Println("shutting down")
 	os.Exit(0)
-
-	//err := http.ListenAndServe(fmt.Sprintf(":%d", 8000), router)
-	//if err != nil {
-	//	zap.L().Error("failed to start the HTTP server", zap.Error(err))
-	//}
 
 }
