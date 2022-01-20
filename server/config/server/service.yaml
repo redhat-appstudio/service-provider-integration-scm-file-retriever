@@ -1,0 +1,12 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: file-retriever-server-service
+spec:
+  ports:
+  - port: 8000
+    name: file-retriever-server-port
+    protocol: TCP
+    targetPort: 8000
+  selector:
+    app.kubernetes.io/name: service-provider-scm-file-retriever-server

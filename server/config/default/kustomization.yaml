@@ -1,0 +1,23 @@
+# Adds namespace to all resources.
+namespace: spi-server # WARN: keep this in sync with the namespace defined in the prepare base
+
+# Value of this field is prepended to the
+# names of all resources, e.g. a deployment named
+# "wordpress" becomes "alices-wordpress".
+# Note that it should also match with the prefix (text before '-') of the namespace
+# field above.
+namePrefix: spi-server- # WARN: keep this in sync with the namespace defined in the prepare base
+
+images:
+- name: quay.io/redhat-appstudio/service-provider-integration-scm-file-retriever-server
+  newName: quay.io/redhat-appstudio/service-provider-integration-scm-file-retriever-server
+  newTag: next
+
+
+# Labels to add to all resources and selectors.
+commonLabels:
+  app.kubernetes.io/part-of: service-provider-integration-scm-file-retriever-server
+
+resources:
+- ../server
+
