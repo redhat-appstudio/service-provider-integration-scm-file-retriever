@@ -112,8 +112,8 @@ func main() {
 	router := mux.NewRouter()
 	router.HandleFunc("/health", OkHandler).Methods("GET")
 	router.HandleFunc("/ready", OkHandler).Methods("GET")
-	router.HandleFunc("/spi/scm/gitfile", GetFileHandler).Queries("repoUrl", "{repoUrl}").Queries("filepath", "{filepath}").Queries("ref", "{ref}").Methods("GET")
-	router.HandleFunc("/spi/scm/", SendIndexHtml).Methods("GET")
+	router.HandleFunc("/gitfile", GetFileHandler).Queries("repoUrl", "{repoUrl}").Queries("filepath", "{filepath}").Queries("ref", "{ref}").Methods("GET")
+	router.PathPrefix("/").Handler(http.FileServer(http.Dir("./static/")))
 
 	srv := &http.Server{
 		Addr: "0.0.0.0:8000",

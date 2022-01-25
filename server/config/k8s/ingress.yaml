@@ -5,12 +5,12 @@ metadata:
   name: spi-scm-file-retriever-server-ingress
 spec:
   rules:
-  - http:
-      paths:
-      - backend:
-          service:
-            name: spi-scm-file-retriever-server-service
-            port:
-              number: 8000
-        path: "/spi/scm"
-        pathType: ImplementationSpecific
+    - host: "scm.192.168.64.7.nip.io"
+      http:
+        paths:
+          - backend:
+              service:
+                name: spi-scm-file-retriever-server-service
+                port:
+                  number: 8000
+            pathType: ImplementationSpecific
