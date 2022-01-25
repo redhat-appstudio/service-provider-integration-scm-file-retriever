@@ -12,3 +12,9 @@ patches:
       kind: Ingress
       name: spi-oauth-ingress
     path: ingress-patch.json
+
+secretGenerator:
+  - name: oauth-config
+    behavior: replace
+    files:
+      - config.yaml
