@@ -11,3 +11,4 @@ resources:
 - deployment.yaml
 - service-account.yaml
 - service.yaml
+- rbac.yaml
