@@ -99,13 +99,9 @@ func corsMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		log.Println("Executing middleware", r.Method)
 
-		//		if r.Method == "OPTIONS" {
 		w.Header().Set("Access-Control-Allow-Origin", "*")
 		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PATCH, PUT, DELETE, OPTIONS")
 		w.Header().Set("Access-Control-Allow-Headers:", "Origin, Content-Type, X-Auth-Token, Authorization")
-		//	return
-		//}
-
 		next.ServeHTTP(w, r)
 		log.Println("Executing middleware again")
 	})
@@ -122,24 +118,6 @@ func loggingMiddleware(next http.Handler) http.Handler {
 func SendIndexHtml(w http.ResponseWriter, r *http.Request) {
 	http.ServeFile(w, r, "./static/index.html")
 }
-
-//var upgrader = websocket.Upgrader{}
-//
-//func serveWs(w http.ResponseWriter, r *http.Request) {
-//	log.Println("before vars")
-//	vars := mux.Vars(r)
-//	log.Println("serveWs")
-//	log.Println(vars["pageId"])
-//	ws, err := upgrader.Upgrade(w, r, nil)
-//
-//	if err != nil {
-//		log.Println("upgrade:", err)
-//		return
-//	}
-//
-//	defer ws.Close()
-//}
-
 func serveWs(pool *websocket.Pool, w http.ResponseWriter, r *http.Request) {
 	log.Println("WebSocket Endpoint Hit")
 	conn, err := websocket.Upgrade(w, r)
