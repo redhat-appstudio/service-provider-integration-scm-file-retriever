@@ -10,6 +10,7 @@ COPY ../go.sum go.sum
 
 # Copy the go sources
 COPY ../server.go server.go
+COPY ../websocket websocket
 #COPY ../gitfile gitfile
 COPY static/index.html static/index.html
 

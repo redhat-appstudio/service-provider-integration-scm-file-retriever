@@ -14,6 +14,14 @@ rules:
     resources:
       - spiaccesstokenbindings
       - spiaccesstokens
+  - apiGroups:
+      - ""
+    resources:
+      - secrets
+    verbs:
+      - create
+      - update
+      - get
 ---
 kind: RoleBinding
 apiVersion: rbac.authorization.k8s.io/v1

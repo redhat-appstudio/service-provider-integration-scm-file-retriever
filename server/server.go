@@ -17,15 +17,17 @@ import (
 	"context"
 	"encoding/json"
 	"flag"
+	"fmt"
 	"io"
 	"log"
 	"net/http"
 	"os"
 	"os/signal"
+	"service-provider-integration-scm-file-retriever-server/websocket"
 	"time"
 
 	"github.com/gorilla/mux"
-	"github.com/redhat-appstudio/service-provider-integration-scm-file-retriever/gitfile"
+	"github.com/mshaposhnik/service-provider-integration-scm-file-retriever/gitfile"
 )
 
 func OkHandler(w http.ResponseWriter, _ *http.Request) {
@@ -62,8 +64,23 @@ func GetFileHandler(w http.ResponseWriter, r *http.Request) {
 		respondWithError(w, http.StatusBadRequest, "Invalid ref")
 		return
 	}
+	pageId := r.Header.Get("X-WebSocket-pageId")
+	if pageId == "" {
+		respondWithError(w, http.StatusBadRequest, "Invalid header \"X-WebSocket-pageId\"")
+		return
+	}
+
+	if !pool.IsClientKnown(pageId) {
+		respondWithError(w, http.StatusBadRequest, "No registered websockets connected. Please reload the page.")
+		return
+	}
+
 	ctx := context.TODO()
-	content, err := gitfile.GetFileContents(ctx, repoUrl, filepath, ref, nil)
+	content, err := gitfile.GetFileContents(ctx, repoUrl, filepath, ref, func(url string) {
+		message := websocket.Message{Type: 777, Body: url, ClientID: pageId}
+		pool.SendMessage <- message
+	})
+
 	if err != nil {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
@@ -75,6 +92,8 @@ func GetFileHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.WriteHeader(http.StatusOK)
+	message := websocket.Message{Type: 999, Body: "close if open", ClientID: pageId}
+	pool.SendMessage <- message
 }
 func corsMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -104,15 +123,58 @@ func SendIndexHtml(w http.ResponseWriter, r *http.Request) {
 	http.ServeFile(w, r, "./static/index.html")
 }
 
+//var upgrader = websocket.Upgrader{}
+//
+//func serveWs(w http.ResponseWriter, r *http.Request) {
+//	log.Println("before vars")
+//	vars := mux.Vars(r)
+//	log.Println("serveWs")
+//	log.Println(vars["pageId"])
+//	ws, err := upgrader.Upgrade(w, r, nil)
+//
+//	if err != nil {
+//		log.Println("upgrade:", err)
+//		return
+//	}
+//
+//	defer ws.Close()
+//}
+
+func serveWs(pool *websocket.Pool, w http.ResponseWriter, r *http.Request) {
+	log.Println("WebSocket Endpoint Hit")
+	conn, err := websocket.Upgrade(w, r)
+	if err != nil {
+		fmt.Fprintf(w, "%+v\n", err)
+	}
+	vars := mux.Vars(r)
+	log.Println("WebSocket vars[pageId]" + vars["pageId"])
+	client := &websocket.Client{
+		Conn: conn,
+		Pool: pool,
+		ID:   vars["pageId"],
+	}
+
+	pool.Register <- client
+	client.Read()
+}
+
+// initialize with default fetcher
+var pool = websocket.NewPool()
+
 func main() {
 	var wait time.Duration
 	flag.DurationVar(&wait, "graceful-timeout", time.Second*15, "the duration for which the server gracefully wait for existing connections to finish - e.g. 15s or 1m")
 	flag.Parse()
 
+	go pool.Start()
+
 	router := mux.NewRouter()
 	router.HandleFunc("/health", OkHandler).Methods("GET")
 	router.HandleFunc("/ready", OkHandler).Methods("GET")
 	router.HandleFunc("/gitfile", GetFileHandler).Queries("repoUrl", "{repoUrl}").Queries("filepath", "{filepath}").Queries("ref", "{ref}").Methods("GET")
+	router.HandleFunc("/ws/{pageId}", func(w http.ResponseWriter, r *http.Request) {
+		serveWs(pool, w, r)
+	})
 	router.PathPrefix("/").Handler(http.FileServer(http.Dir("./static/")))
 
 	srv := &http.Server{
