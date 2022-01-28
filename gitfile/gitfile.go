@@ -26,7 +26,7 @@ type GitFile struct {
 }
 
 // initialize with default fetcher
-var gitFile = New(&EnvVarTokenFetcher{})
+var gitFile = New(NewSpiTokenFetcher())
 
 // GetFileContents is a main entry function allowing to retrieve file content from the SCM provider.
 // It expects three file location parameters, from which the repository URL and path to the file are mandatory,
@@ -38,7 +38,7 @@ func GetFileContents(ctx context.Context, repoUrl, filepath, ref string, callbac
 }
 
 func (g *GitFile) GetFileContents(ctx context.Context, repoUrl, filepath, ref string, callback func(url string)) (io.ReadCloser, error) {
-	headerStruct := buildAuthHeader(repoUrl, g.fetcher)
+	headerStruct, err := buildAuthHeader(ctx, repoUrl, g.fetcher, callback)
 	authHeader := req.HeaderFromStruct(headerStruct)
 	fileUrl, err := detect(repoUrl, filepath, ref, authHeader)
 	if err != nil {
