@@ -2,10 +2,6 @@
 set -e
 echo 'Deploying scm server with spi operator and oauth service'
 
-#oc delete secret oauth-config  -n spi-system
-#oc create secret generic oauth-config --from-file=server/config/os/config.yaml -n spi-system
-
-
 oc create secret generic oauth-config \
     --save-config --dry-run=client \
     --from-file=server/config/os/config.yaml \

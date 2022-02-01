@@ -1,7 +1,7 @@
-kind: Role
+kind: ClusterRole
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  name: accesstokens-file-retriever-server-sa
+  name: spiaccesstokens-file-retriever-server-sa
 rules:
   - verbs:
       - create
@@ -23,14 +23,15 @@ rules:
       - update
       - get
 ---
-kind: RoleBinding
+kind: ClusterRoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  name: accesstokens-for-default-sa
+  name: spiaccesstokens-for-file-retriever-server-sa
 roleRef:
   apiGroup: rbac.authorization.k8s.io
-  kind: Role
-  name: accesstokens-file-retriever-server-sa
+  kind: ClusterRole
+  name: spiaccesstokens-file-retriever-server-sa
 subjects:
   - kind: ServiceAccount
-    name: file-retriever-server-sa
+    name: spi-scm-file-retriever-server-sa
+    namespace: spi-scm

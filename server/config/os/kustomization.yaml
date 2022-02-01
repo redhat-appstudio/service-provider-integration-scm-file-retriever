@@ -1,10 +1,10 @@
 kind: Kustomization
 apiVersion: kustomize.config.k8s.io/v1beta1
-namespace: spi-system
 resources:
   - ../default
 #  - ../namespace
   - oauth_route.yaml
+  - scm_route.yaml
   - https://github.com/redhat-appstudio/service-provider-integration-operator/config/default?ref=240ed9ab1682f73ab1740741ddbe7725c8eb8ca2
 
 
