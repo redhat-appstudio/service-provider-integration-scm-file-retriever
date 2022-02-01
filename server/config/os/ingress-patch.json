@@ -1,7 +1,0 @@
-[
-  {
-    "op": "replace",
-    "path": "/spec/rules/0/host",
-    "value": "oauth.192.168.64.7.nip.io"
-  }
-]

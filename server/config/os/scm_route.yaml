@@ -5,7 +5,7 @@ metadata:
   namespace: spi-scm
 spec:
   port:
-    targetPort: 8000
+    targetPort: 8080
   to:
     kind: Service
     name: spi-scm-file-retriever-server-service

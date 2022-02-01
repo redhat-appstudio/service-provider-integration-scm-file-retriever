@@ -15,23 +15,23 @@ spec:
       securityContext:
         runAsNonRoot: true
       containers:
-#        - name: kube-rbac-proxy
-#          image: quay.io/openshift/origin-kube-rbac-proxy:4.10.0
-#          args:
-#            - "--insecure-listen-address=0.0.0.0:8080"
-#            - "--upstream=http://127.0.0.1:8000/"
-#            - "--config-file=/etc/kube-rbac-proxy/config-file.yaml"
-#            - "--logtostderr=true"
-#            - "--ignore-paths=\"/\",\"/ws/*\""
-#            - "--v=20"
-#          ports:
-#            - containerPort: 8080
-#              name: proxy
-#          volumeMounts:
-#            - name: config
-#              mountPath: /etc/kube-rbac-proxy
-#          securityContext:
-#            allowPrivilegeEscalation: false
+        - name: kube-rbac-proxy
+          image: quay.io/openshift/origin-kube-rbac-proxy:4.10.0
+          args:
+            - "--insecure-listen-address=0.0.0.0:8080"
+            - "--upstream=http://127.0.0.1:8000/"
+            - "--config-file=/etc/kube-rbac-proxy/config-file.yaml"
+            - "--logtostderr=true"
+            - "--ignore-paths=\"/\",\"/ws/*\""
+            - "--v=20"
+          ports:
+            - containerPort: 8080
+              name: proxy
+          volumeMounts:
+            - name: config
+              mountPath: /etc/kube-rbac-proxy
+          securityContext:
+            allowPrivilegeEscalation: false
         - command:
           - /spi-file
           image: quay.io/redhat-appstudio/service-provider-integration-scm-file-retriever-server
