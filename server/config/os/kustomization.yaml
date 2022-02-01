@@ -1,0 +1,26 @@
+kind: Kustomization
+apiVersion: kustomize.config.k8s.io/v1beta1
+namespace: spi-system
+resources:
+  - ../default
+#  - ../namespace
+  - oauth_route.yaml
+  - https://github.com/redhat-appstudio/service-provider-integration-operator/config/default?ref=240ed9ab1682f73ab1740741ddbe7725c8eb8ca2
+
+
+#patches:
+#  - target:
+#      kind: Ingress
+#      name: spi-oauth-ingress
+#    path: ingress-patch.json
+
+#secretGenerator:
+#  - name: oauth-config
+#    behavior: replace
+#    files:
+#      - config.yaml
+#
+#images:
+#  - name: quay.io/redhat-appstudio/service-provider-integration-operator
+#    newName: quay.io/lkrejci/service-provider-integration-operator:svpi-44
+#    newTag: no-k8s-auth
