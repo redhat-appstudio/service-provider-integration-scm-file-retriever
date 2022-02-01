@@ -18,3 +18,8 @@ secretGenerator:
     behavior: replace
     files:
       - config.yaml
+#
+#images:
+#  - name: quay.io/redhat-appstudio/service-provider-integration-operator
+#    newName: quay.io/lkrejci/service-provider-integration-operator:svpi-44
+#    newTag: no-k8s-auth

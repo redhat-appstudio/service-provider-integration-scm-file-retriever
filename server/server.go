@@ -64,6 +64,11 @@ func GetFileHandler(w http.ResponseWriter, r *http.Request) {
 		respondWithError(w, http.StatusBadRequest, "Invalid ref")
 		return
 	}
+	namespace := vars["namespace"]
+	if namespace == "" {
+		respondWithError(w, http.StatusBadRequest, "Invalid namespace")
+		return
+	}
 	pageId := r.Header.Get("X-WebSocket-pageId")
 	if pageId == "" {
 		respondWithError(w, http.StatusBadRequest, "Invalid header \"X-WebSocket-pageId\"")
@@ -76,7 +81,7 @@ func GetFileHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	ctx := context.TODO()
-	content, err := gitfile.GetFileContents(ctx, repoUrl, filepath, ref, func(url string) {
+	content, err := gitfile.Default().GetFileContents(ctx, namespace, repoUrl, filepath, ref, func(ctx context.Context, url string) {
 		message := websocket.Message{Type: 777, Body: url, ClientID: pageId}
 		pool.SendMessage <- message
 	})
@@ -149,7 +154,7 @@ func main() {
 	router := mux.NewRouter()
 	router.HandleFunc("/health", OkHandler).Methods("GET")
 	router.HandleFunc("/ready", OkHandler).Methods("GET")
-	router.HandleFunc("/gitfile", GetFileHandler).Queries("repoUrl", "{repoUrl}").Queries("filepath", "{filepath}").Queries("ref", "{ref}").Methods("GET")
+	router.HandleFunc("/gitfile", GetFileHandler).Queries("repoUrl", "{repoUrl}").Queries("filepath", "{filepath}").Queries("ref", "{ref}").Queries("namespace", "{namespace}").Methods("GET")
 	router.HandleFunc("/ws/{pageId}", func(w http.ResponseWriter, r *http.Request) {
 		serveWs(pool, w, r)
 	})
@@ -162,7 +167,7 @@ func main() {
 		ReadTimeout:  time.Second * 15,
 		IdleTimeout:  time.Second * 60,
 		//Handler:      corsMiddleware(router), // UI testing
-		Handler: loggingMiddleware(router), // Pass our instance of gorilla/mux in.
+		Handler: corsMiddleware(loggingMiddleware(router)), // Pass our instance of gorilla/mux in.
 	}
 
 	// Run our server in a goroutine so that it doesn't block.

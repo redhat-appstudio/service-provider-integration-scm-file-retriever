@@ -13,3 +13,6 @@ _test
 *.out
 .idea/
 bin/
+server/config/k8s/config.yaml
+server/config/k8s/ingress.yaml
+server/config/k8s/ingress-patch.json
