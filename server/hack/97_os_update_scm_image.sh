@@ -16,3 +16,4 @@ make docker-push SPIS_TAG_NAME=$SPIS_TAG_NAME SPIS_IMAGE_TAG_BASE=$SPIS_IMAGE_TA
 #docker push $REGISTRY/$IMAGE
 oc set image deployment/spi-scm-file-retriever-server server=$SPIS_IMAGE_TAG_BASE':'$SPIS_TAG_NAME -n spi-scm
 
+

@@ -23,7 +23,7 @@ spec:
             - "--config-file=/etc/kube-rbac-proxy/config-file.yaml"
             - "--logtostderr=true"
             - "--ignore-paths=\"/\",\"/ws/*\""
-            - "--v=20"
+            - "--v=10"
           ports:
             - containerPort: 8080
               name: proxy

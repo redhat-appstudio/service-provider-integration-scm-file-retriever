@@ -1,8 +1,3 @@
-server/config/k8s/config.yaml
-server/config/k8s/ingress.yaml
-server/config/k8s/ingress-patch.json
-server/config/os/config.yaml
-
 # Compiled Object files, Static and Dynamic libs (Shared Objects)
 *.o
 *.a
@@ -18,5 +13,3 @@ _test
 *.out
 .idea/
 bin/
-
-
