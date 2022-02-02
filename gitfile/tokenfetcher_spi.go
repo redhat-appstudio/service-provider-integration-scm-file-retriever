@@ -138,6 +138,9 @@ func (s *SpiTokenFetcher) BuildHeader(ctx context.Context, namespace, repoUrl st
 	var secretName string
 	for timeout := time.After(duration); ; {
 		readBinding, err := readTB(ctx, namespace, tBindingName, s.k8sClient)
+		if err != nil {
+			zap.L().Error("Error reading TB item:", zap.Error(err))
+		}
 		err = s.k8sClient.Get(ctx, client.ObjectKey{Namespace: namespace, Name: tBindingName}, readBinding)
 		if err != nil {
 			zap.L().Error("Error reading TB item:", zap.Error(err))
