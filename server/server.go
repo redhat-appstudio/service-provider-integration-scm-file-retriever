@@ -167,7 +167,7 @@ func main() {
 		ReadTimeout:  time.Second * 15,
 		IdleTimeout:  time.Second * 60,
 		//Handler:      corsMiddleware(router), // UI testing
-		Handler: corsMiddleware(loggingMiddleware(router)), // Pass our instance of gorilla/mux in.
+		Handler: loggingMiddleware(router), // Pass our instance of gorilla/mux in.
 	}
 
 	// Run our server in a goroutine so that it doesn't block.
