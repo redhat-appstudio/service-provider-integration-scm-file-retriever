@@ -4,7 +4,7 @@ resources:
   - ../default
   - ../namespace
   - ingress.yaml
-  - https://github.com/redhat-appstudio/service-provider-integration-operator/config/k8s?ref=c36682a4fd7dbac2e7303637e0cc4c5ff958cfd4
+  - https://github.com/redhat-appstudio/service-provider-integration-operator/config/default?ref=53e870e32db78603485621337f57c09793bcf06f
 
 
 patches:

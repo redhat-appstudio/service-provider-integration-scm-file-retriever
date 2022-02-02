@@ -5,7 +5,7 @@ metadata:
   name: spi-scm-file-retriever-server-ingress
 spec:
   rules:
-    - host: "scm.192.168.64.7.nip.io"
+    - host: "scm.minikube.ip.nip.io"
       http:
         paths:
           - backend:
