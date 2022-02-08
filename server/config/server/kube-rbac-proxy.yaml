@@ -10,7 +10,8 @@ data:
         byQueryParameter:
           name: "namespace"
       resourceAttributes:
-        apiVersion: appstudio.redhat.com
+        apiVersion: v1beta1
+        apiGroup: appstudio.redhat.com
         resource: SPIAccessTokenBinding
         namespace: "{{ .Value }}"
 ---
