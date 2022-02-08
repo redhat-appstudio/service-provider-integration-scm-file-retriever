@@ -11,7 +11,7 @@ data:
           name: "namespace"
       resourceAttributes:
         apiGroup: appstudio.redhat.com
-        resource: SPIAccessTokenBinding
+        resource: spiaccesstokenbindings
         namespace: "{{ .Value }}"
 ---
 apiVersion: rbac.authorization.k8s.io/v1
