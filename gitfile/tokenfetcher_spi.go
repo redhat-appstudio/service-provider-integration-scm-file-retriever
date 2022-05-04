@@ -37,7 +37,7 @@ type SpiTokenFetcher struct {
 
 const (
 	letterBytes = "abcdefghijklmnopqrstuvwxyz1234567890"
-	duration    = 5 * time.Second
+	duration    = 25 * time.Second
 )
 
 func NewSpiTokenFetcher() *SpiTokenFetcher {
@@ -145,6 +145,12 @@ func (s *SpiTokenFetcher) BuildHeader(ctx context.Context, namespace, repoUrl st
 		if err != nil {
 			zap.L().Error("Error reading TB item:", zap.Error(err))
 		}
+		errorMsg := readBinding.Status.ErrorMessage
+		if errorMsg != "" {
+			return nil, fmt.Errorf("There is a problem in matching the token. Usually, that can be related to unauthorized OAuth application in the requested repository,"+
+				"mismatch of scopes set, or other error. Message from operator: %s ", errorMsg)
+		}
+
 		secretName = readBinding.Status.SyncedObjectRef.Name
 		if secretName != "" {
 			break
@@ -196,7 +202,6 @@ func newSPIATB(tBindingName, namespace, repoUrl string) *v1beta1.SPIAccessTokenB
 						Area: v1beta1.PermissionAreaRepository,
 					},
 				},
-				AdditionalScopes: []string{"api"},
 			},
 			Secret: v1beta1.SecretSpec{
 				Type: corev1.SecretTypeBasicAuth,
