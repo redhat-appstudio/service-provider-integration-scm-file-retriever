@@ -1196,8 +1196,8 @@ github.com/rboyer/safeio v0.2.1/go.mod h1:Cq/cEPK+YXFn622lsQ0K4KsPZSPtaptHHEldsy
 github.com/rcrowley/go-metrics v0.0.0-20181016184325-3113b8401b8a/go.mod h1:bCqnVzQkZxMG4s8nGwiZ5l3QUCyqpo9Y+/ZMZ9VjZe4=
 github.com/redhat-appstudio/service-provider-integration-operator v0.4.6 h1:6DKNtsljwzUdaJVdqftJ8XyTBWda1J3OhMBqqDjf3ao=
 github.com/redhat-appstudio/service-provider-integration-operator v0.4.6/go.mod h1:S7NKaaZ0rhCrmHGqae9i21ROY23LurTtII3eMKqxjBQ=
-github.com/redhat-appstudio/service-provider-integration-scm-file-retriever v0.4.4-0.20220504050430-6850830e3603 h1:w/FDc9vb5+T8dH/q7Rj7FfH3YgsnPKDxMTGQyQMkbvk=
-github.com/redhat-appstudio/service-provider-integration-scm-file-retriever v0.4.4-0.20220504050430-6850830e3603/go.mod h1:VvG20xKCoV4ae/ItEOEWoIiLAI0VsdLPs5eEAYcztbA=
+github.com/redhat-appstudio/service-provider-integration-scm-file-retriever v0.4.4-0.20220502084602-5ec171624dc2 h1:p9h1vSH+7PWvXXY8p5Im0T3/Q+UzoY96WeljsJcVOzA=
+github.com/redhat-appstudio/service-provider-integration-scm-file-retriever v0.4.4-0.20220502084602-5ec171624dc2/go.mod h1:VvG20xKCoV4ae/ItEOEWoIiLAI0VsdLPs5eEAYcztbA=
 github.com/renier/xmlrpc v0.0.0-20170708154548-ce4a1a486c03/go.mod h1:gRAiPF5C5Nd0eyyRdqIu9qTiFSoZzpTq727b5B8fkkU=
 github.com/rogpeppe/fastuuid v0.0.0-20150106093220-6724a57986af/go.mod h1:XWv6SoW27p1b0cqNHllgS5HIMJraePCO15w5zCzIWYg=
 github.com/rogpeppe/fastuuid v1.2.0/go.mod h1:jVj6XXZzXRy/MSR5jhDC/2q6DgLz+nrA6LYCDYWNEvQ=
