@@ -52,11 +52,21 @@ and demo application image will be built.
 ### Deploying demo server application
 
 There is a bunch of helpful scripts located at `server/hack` which can be used for different deployment scenarios.
+The general prerequisite for all deployment types is to have `SPI_GITHUB_CLIENT_ID` and `SPI_GITHUB_CLIENT_SECRET` environment variables to be set locally, containing
+correct values from registered GitHub OAuth application. 
 
 #### Deploying on Kubernetes
   ...in progress
 
 #### Deploying on Openshift
+ Entry point for Openshift deployment is a `/server/hack/12_oc_deploy.sh` script. Please, note that script should
+be executed from the root project folder and not directly from `hack` folder. When executed, script performs installation
+of spi-controller, spi-oauth-service and spi-file-retriever-server deployments, so it's not necessary
+to pre-install something before neath. Script also performs Vault storage initialization and unseal.
+As a result of script execution, there must be three successful deployments in the `spi-system` project,
+and the `oauth-secret` secret must be created and filled with correct OAuth authentication data.
+Do not forget to align the server hostname in the secret and OAuth application callback URL on GitHub after installation.  
 
-    
+   
+### Known  
 
