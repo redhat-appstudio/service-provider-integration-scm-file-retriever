@@ -68,5 +68,7 @@ and the `oauth-secret` secret must be created and filled with correct OAuth auth
 Do not forget to align the server hostname in the secret and OAuth application callback URL on GitHub after installation.  
 
    
-### Known  
-
+### Known peculiarities
+The most common problem which may occur during file resolving, is that configured OAuth application is not approved to access
+the particular repository. So, user must read GitHub OAuth authorization window carefully, and request permissions if needed.
+There also can be some inconsistency of the OAuth scopes, which may lead to token matching fail.
