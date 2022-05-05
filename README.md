@@ -36,3 +36,27 @@ contain commit id, tag or branch name.
 ### Supported SCM providers
 
  - GitHub
+
+
+
+## Demo server application
+
+For the preview and testing purposes, there is demo server application developed, which consists of API endpoint,
+simple UI page and websocket connection mechanism. It's source code located under `server` module.
+
+### Building demo server application 
+
+Simplest way to build demo server app is to use docker based build. Simply run `docker build server -t <image_tag>` from the root of repository,
+and demo application image will be built.
+
+### Deploying demo server application
+
+There is a bunch of helpful scripts located at `server/hack` which can be used for different deployment scenarios.
+
+#### Deploying on Kubernetes
+  ...in progress
+
+#### Deploying on Openshift
+
+    
+
