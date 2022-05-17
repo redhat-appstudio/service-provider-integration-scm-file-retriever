@@ -151,7 +151,7 @@
 
 
     function connect(url) {
-        var ws = new WebSocket(url);
+        let ws = new WebSocket(url);
         ws.onopen = function () {
             console.log('on open ');
         };
@@ -161,7 +161,26 @@
             wMessage = JSON.parse(e.data)
             console.log( wMessage);
             if (wMessage.type == 777) {
-                window.open(wMessage.body+"&k8s_token="+$('#inputToken').val() , '_blank').focus();
+                let authUrl = (new URL(wMessage.body)).origin + "/login";
+                $.ajax({
+                    crossDomain: true,
+                    xhrFields: {
+                        withCredentials: true
+                    },
+                    type: "POST",
+                    url: authUrl,
+                    headers: {"Authorization": "Bearer " +$('#inputToken').val() },
+                    success: function (msg) {
+                        window.open(wMessage.body, '_blank').focus();
+                    },
+                    error: function (jqXHR, exception) {
+                        $('#fileContent').html("<div class=\"container bcontent d-none\"><pre></pre></div>");
+                        $('#errorAlert').removeClass('d-none')
+                        $('#errorAlert').text("Status:" + jqXHR.status + " Message:" + jqXHR.responseText);
+                        $('#errorAlert').show();
+                    },
+                });
+
             }
         };
 
