@@ -99,6 +99,10 @@ func (s *SpiTokenFetcher) BuildHeader(ctx context.Context, namespace, repoUrl st
 		if err != nil {
 			zap.L().Error("Error reading TB item:", zap.Error(err))
 		}
+		errorMsg := readBinding.Status.ErrorMessage
+		if errorMsg != "" {
+			return nil, fmt.Errorf("Newly created binding is in the error state with message: %s ", errorMsg)
+		}
 		tokenName = readBinding.Status.LinkedAccessTokenName
 		if tokenName != "" {
 			break
@@ -120,7 +124,14 @@ func (s *SpiTokenFetcher) BuildHeader(ctx context.Context, namespace, repoUrl st
 	var loginCalled = false
 	for timeout := time.After(10 * duration); ; {
 		readToken := &v1beta1.SPIAccessToken{}
-		_ = s.k8sClient.Get(ctx, client.ObjectKey{Namespace: namespace, Name: tokenName}, readToken)
+		err = s.k8sClient.Get(ctx, client.ObjectKey{Namespace: namespace, Name: tokenName}, readToken)
+		if err != nil {
+			zap.L().Error("Error reading access token item:", zap.Error(err))
+		}
+		errorMsg := readToken.Status.ErrorMessage
+		if errorMsg != "" {
+			return nil, fmt.Errorf("Access token is in the error state with message: %s ", errorMsg)
+		}
 		if readToken.Status.Phase == v1beta1.SPIAccessTokenPhaseAwaitingTokenData && !loginCalled {
 			url = readToken.Status.OAuthUrl
 			zap.L().Info(fmt.Sprintf("URL to OAUth: %s", url))
@@ -145,10 +156,6 @@ func (s *SpiTokenFetcher) BuildHeader(ctx context.Context, namespace, repoUrl st
 	var secretName string
 	for timeout := time.After(duration); ; {
 		readBinding, err := readTB(ctx, namespace, tBindingName, s.k8sClient)
-		if err != nil {
-			zap.L().Error("Error reading TB item:", zap.Error(err))
-		}
-		err = s.k8sClient.Get(ctx, client.ObjectKey{Namespace: namespace, Name: tBindingName}, readBinding)
 		if err != nil {
 			zap.L().Error("Error reading TB item:", zap.Error(err))
 		}
