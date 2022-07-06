@@ -45,6 +45,8 @@ var (
 	taskCancelledError = errors.New("task is cancelled")
 	timeoutError       = errors.New("timed out")
 	matchError         = errors.New("\"There is a problem in matching the token. Usually, that can be related to unauthorized OAuth application in the requested repository,\"+\n\t\t\t\t\"mismatch of scopes set, or other error.")
+	accessTokenError   = errors.New("access token is in the error state")
+	tokenBindingError  = errors.New("newly created binding is in the error state")
 )
 
 func NewSpiTokenFetcher() *SpiTokenFetcher {
@@ -101,7 +103,7 @@ func (s *SpiTokenFetcher) BuildHeader(ctx context.Context, namespace, repoUrl st
 		}
 		errorMsg := readBinding.Status.ErrorMessage
 		if errorMsg != "" {
-			return nil, fmt.Errorf("Newly created binding is in the error state with message: %w ", errorMsg)
+			return nil, fmt.Errorf("%w. Error message: %s", tokenBindingError, errorMsg)
 		}
 		tokenName = readBinding.Status.LinkedAccessTokenName
 		if tokenName != "" {
@@ -130,7 +132,7 @@ func (s *SpiTokenFetcher) BuildHeader(ctx context.Context, namespace, repoUrl st
 		}
 		errorMsg := readToken.Status.ErrorMessage
 		if errorMsg != "" {
-			return nil, fmt.Errorf("Access token is in the error state with message: %w", errorMsg)
+			return nil, fmt.Errorf("%w. Error message: %s", accessTokenError, errorMsg)
 		}
 		if readToken.Status.Phase == v1beta1.SPIAccessTokenPhaseAwaitingTokenData && !loginCalled {
 			url = readToken.Status.OAuthUrl
@@ -161,7 +163,7 @@ func (s *SpiTokenFetcher) BuildHeader(ctx context.Context, namespace, repoUrl st
 		}
 		errorMsg := readBinding.Status.ErrorMessage
 		if errorMsg != "" {
-			return nil, fmt.Errorf("%w. Message from operator: %w", matchError, errorMsg)
+			return nil, fmt.Errorf("%w. Message from operator: %s", matchError, errorMsg)
 		}
 
 		secretName = readBinding.Status.SyncedObjectRef.Name
