@@ -28,7 +28,8 @@ var (
 type ScmProvider interface {
 	// detect will check whether the provided repository URL matches a known SCM pattern,
 	// and transform input params into valid file download URL.
-	// Params are repository, path to the file inside the repository, Git reference (branch/tag/commitId)
+	// Params are repository, path to the file inside the repository, Git reference (branch/tag/commitId),
+	// HTTP client instance and authentication headers holder struct
 	detect(ctx context.Context, repoUrl, filepath, ref string, client *req.Client, auth HeaderStruct) (bool, string, error)
 }
 

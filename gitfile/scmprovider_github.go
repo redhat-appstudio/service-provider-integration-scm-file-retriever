@@ -61,11 +61,10 @@ func (d *GitHubScmProvider) detect(ctx context.Context, repoUrl, filepath, ref s
 
 	var file GithubFile
 	var errMsg ErrorMessage
-	url := fmt.Sprintf(GithubAPITemplate, m["repoUser"], m["repoName"], filepath)
 	resp, err := request.
 		SetResult(&file).
 		SetError(&errMsg).
-		Get(url)
+		Get(fmt.Sprintf(GithubAPITemplate, m["repoUser"], m["repoName"], filepath))
 	if err != nil {
 		zap.L().Error("Failed to make GitHub API call", zap.Error(err))
 		return true, "", fmt.Errorf("GitHub API call failed: %w", err)
