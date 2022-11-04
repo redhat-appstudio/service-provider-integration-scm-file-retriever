@@ -16,13 +16,22 @@ package gitfile
 import (
 	"bytes"
 	"context"
+	"fmt"
+	"github.com/imroc/req/v3"
+	"go.uber.org/zap"
 	"io"
-
-	"github.com/imroc/req"
+	"time"
 )
+
+const defaultHttpTimeout = 5 * time.Second
 
 type GitFile struct {
 	fetcher TokenFetcher
+	client  *req.Client
+}
+
+type ErrorMessage struct {
+	Message string `json:"message"`
 }
 
 // GetFileContents is a main entry function allowing to retrieve file content from the SCM provider.
@@ -35,21 +44,39 @@ func (g *GitFile) GetFileContents(ctx context.Context, namespace, repoUrl, filep
 	if err != nil {
 		return nil, err
 	}
-	authHeader := req.HeaderFromStruct(headerStruct)
-	fileUrl, err := detect(repoUrl, filepath, ref, authHeader)
+
+	fileUrl, err := detect(ctx, repoUrl, filepath, ref, g.client, *headerStruct)
 	if err != nil {
 		return nil, err
 	}
 
-	response, _ := req.Get(fileUrl, ctx, authHeader)
-	return io.NopCloser(bytes.NewBuffer(response.Bytes())), nil
+	request := g.client.R().SetContext(ctx).SetBearerAuthToken(headerStruct.Authorization)
+	var errMsg ErrorMessage
+	resp, err := request.
+		SetError(&errMsg).
+		Get(fileUrl)
+	if err != nil {
+		zap.L().Error("Failed to make GitHub URL call", zap.Error(err))
+		return nil, fmt.Errorf("GitHub file call failed: %w", err)
+	}
+	statusCode := resp.StatusCode
+	zap.L().Debug(fmt.Sprintf(
+		"GitHub file call response code: %d", statusCode))
+	if resp.IsSuccess() {
+		return io.NopCloser(bytes.NewBuffer(resp.Bytes())), nil
+	}
+	if resp.IsError() {
+		return nil, fmt.Errorf("file request failed. Status code: %d. Message: %s", statusCode, errMsg.Message)
+	}
+	return nil, fmt.Errorf("file request returned an unknown result. Status code: %d. Content: %s", statusCode, resp.Dump())
+
 }
 
 // New creates a new *GitFile instance
 func New(fetcher TokenFetcher) *GitFile {
-	return &GitFile{fetcher: fetcher}
+	return &GitFile{fetcher: fetcher, client: req.C().SetTimeout(defaultHttpTimeout)}
 }
 
 func Default() *GitFile {
-	return &GitFile{fetcher: NewSpiTokenFetcher()}
+	return &GitFile{fetcher: NewSpiTokenFetcher(), client: req.C().SetTimeout(defaultHttpTimeout)}
 }
