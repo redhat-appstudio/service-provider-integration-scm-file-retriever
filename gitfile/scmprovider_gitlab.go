@@ -22,14 +22,14 @@ import (
 // GitLabScmProvider implements Detector to detect Gitlab URLs.
 type GitLabScmProvider struct{}
 
-func (d *GitLabScmProvider) detect(ctx context.Context, repoUrl, filepath, ref string, cl *req.Client, auth HeaderStruct) (bool, string, error) {
+func (d *GitLabScmProvider) detect(ctx context.Context, repoUrl, filepath, ref string, cl *req.Client, auth HeaderStruct) (bool, string, DetectError) {
 	if len(repoUrl) == 0 {
-		return false, "", nil
+		return false, "", DetectError{}
 	}
 
 	if strings.HasPrefix(repoUrl, "https://gitlab.com/") {
-		return true, "", nil
+		return true, "", DetectError{}
 	}
 
-	return false, "", nil
+	return false, "", DetectError{}
 }

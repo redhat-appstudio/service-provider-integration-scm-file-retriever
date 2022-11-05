@@ -44,9 +44,9 @@ var GithubURLRegexpNames = GithubURLRegexp.SubexpNames()
 type GitHubScmProvider struct {
 }
 
-func (d *GitHubScmProvider) detect(ctx context.Context, repoUrl, filepath, ref string, cl *req.Client, auth HeaderStruct) (bool, string, error) {
+func (d *GitHubScmProvider) detect(ctx context.Context, repoUrl, filepath, ref string, cl *req.Client, auth HeaderStruct) (bool, string, DetectError) {
 	if len(repoUrl) == 0 || !GithubURLRegexp.MatchString(repoUrl) {
-		return false, "", nil
+		return false, "", DetectError{}
 	}
 
 	result := GithubURLRegexp.FindAllStringSubmatch(repoUrl, -1)
@@ -67,17 +67,17 @@ func (d *GitHubScmProvider) detect(ctx context.Context, repoUrl, filepath, ref s
 		Get(fmt.Sprintf(GithubAPITemplate, m["repoUser"], m["repoName"], filepath))
 	if err != nil {
 		zap.L().Error("Failed to make GitHub API call", zap.Error(err))
-		return true, "", fmt.Errorf("GitHub API call failed: %w", err)
+		return true, "", DetectError{Error: fmt.Errorf("GitHub API call failed: %w", err), StatusCode: resp.StatusCode}
 	}
 
 	statusCode := resp.StatusCode
 	zap.L().Debug(fmt.Sprintf(
 		"GitHub API call response code: %d", statusCode))
 	if resp.IsSuccess() {
-		return true, file.DownloadUrl, nil
+		return true, file.DownloadUrl, DetectError{}
 	}
 	if resp.IsError() {
-		return true, "", fmt.Errorf("%w: %d. Error message: %s", unexpectedStatusCodeError, statusCode, errMsg.Message)
+		return true, "", DetectError{Error: fmt.Errorf("%w: %d. Error message: %s", unexpectedStatusCodeError, statusCode, errMsg.Message), StatusCode: statusCode}
 	}
-	return true, "", fmt.Errorf("%w: %d. Response body: %s", undefinedResponseError, statusCode, resp.Dump())
+	return true, "", DetectError{Error: fmt.Errorf("%w: %d. Response body: %s", undefinedResponseError, statusCode, resp.Dump()), StatusCode: statusCode}
 }

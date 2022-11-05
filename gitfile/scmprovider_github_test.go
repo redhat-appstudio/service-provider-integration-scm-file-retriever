@@ -39,9 +39,9 @@ func TestGetFileHead(t *testing.T) {
 		return resp, nil
 	})
 
-	r1, err := detect(context.TODO(), "https://github.com/foo-user/foo-repo", "myfile", "HEAD", client, HeaderStruct{Authorization: "foo"})
-	if err != nil {
-		t.Errorf("unexpected error: %v", err)
+	r1, detectError := detect(context.TODO(), "https://github.com/foo-user/foo-repo", "myfile", "HEAD", client, HeaderStruct{Authorization: "foo"})
+	if detectError.Error != nil {
+		t.Errorf("unexpected error: %v", detectError.Error)
 	}
 	assert.Equal(t, "https://raw.githubusercontent.com/foo-user/foo-repo/HEAD/myfile", r1)
 }
@@ -60,9 +60,9 @@ func TestGetFileHeadGitSuffix(t *testing.T) {
 		resp.Header.Set("Content-Type", "application/json; charset=utf-8")
 		return resp, nil
 	})
-	r1, err := detect(context.TODO(), "https://github.com/foo-user/foo-repo.git", "myfile", "HEAD", client, HeaderStruct{Authorization: "foo"})
-	if err != nil {
-		t.Errorf("unexpected error: %v", err)
+	r1, detectError := detect(context.TODO(), "https://github.com/foo-user/foo-repo.git", "myfile", "HEAD", client, HeaderStruct{Authorization: "foo"})
+	if detectError.Error != nil {
+		t.Errorf("unexpected error: %v", detectError.Error)
 	}
 	assert.Equal(t, "https://raw.githubusercontent.com/foo-user/foo-repo/HEAD/myfile", r1)
 }
@@ -83,9 +83,9 @@ func TestGetFileOnBranch(t *testing.T) {
 		return resp, nil
 	})
 
-	r1, err := detect(context.TODO(), "https://github.com/foo-user/foo-repo", "myfile", "v0.1.0", client, HeaderStruct{Authorization: "foo"})
-	if err != nil {
-		t.Errorf("unexpected error: %v", err)
+	r1, detectError := detect(context.TODO(), "https://github.com/foo-user/foo-repo", "myfile", "v0.1.0", client, HeaderStruct{Authorization: "foo"})
+	if detectError.Error != nil {
+		t.Errorf("unexpected error: %v", detectError.Error)
 	}
 	assert.Equal(t, "https://raw.githubusercontent.com/foo-user/foo-repo/v0.1.0/myfile", r1)
 }
@@ -106,9 +106,9 @@ func TestGetFileOnCommitId(t *testing.T) {
 		return resp, nil
 	})
 
-	r1, err := detect(context.TODO(), "https://github.com/foo-user/foo-repo", "myfile", "efaf08a367921ae130c524db4a531b7696b7d967", client, HeaderStruct{Authorization: "foo"})
-	if err != nil {
-		t.Errorf("unexpected error: %v", err)
+	r1, detectError := detect(context.TODO(), "https://github.com/foo-user/foo-repo", "myfile", "efaf08a367921ae130c524db4a531b7696b7d967", client, HeaderStruct{Authorization: "foo"})
+	if detectError.Error != nil {
+		t.Errorf("unexpected error: %v", detectError.Error)
 	}
 	assert.Equal(t, "https://raw.githubusercontent.com/foo-user/foo-repo/efaf08a367921ae130c524db4a531b7696b7d967/myfile", r1)
 }
@@ -124,9 +124,10 @@ func TestGetUnexistingFile(t *testing.T) {
 		return resp, nil
 	})
 
-	_, err := detect(context.TODO(), "https://github.com/foo-user/foo-repo", "myfile", "efaf08a367921ae130c524db4a531b7696b7d967", client, HeaderStruct{Authorization: "foo"})
-	if err == nil {
+	_, detectError := detect(context.TODO(), "https://github.com/foo-user/foo-repo", "myfile", "efaf08a367921ae130c524db4a531b7696b7d967", client, HeaderStruct{Authorization: "foo"})
+	if detectError.Error == nil {
 		t.Error("error expected")
 	}
-	assert.Equal(t, "detection failed: unexpected status code from GitHub API: 404. Error message: File Is Not Found", fmt.Sprint(err))
+	assert.Equal(t, http.StatusNotFound, detectError.StatusCode)
+	assert.Equal(t, "unexpected status code from GitHub API: 404. Error message: File Is Not Found", fmt.Sprint(detectError.Error))
 }

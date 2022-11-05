@@ -18,11 +18,17 @@ import (
 	"errors"
 	"fmt"
 	"github.com/imroc/req/v3"
+	"net/http"
 )
 
 var (
 	invalidSourceError = errors.New("invalid source string")
 )
+
+type DetectError struct {
+	Error      error `json:"error"`
+	StatusCode int   `json:"status"`
+}
 
 // ScmProvider defines the interface that in order to determine if URL belongs to SCM provider
 type ScmProvider interface {
@@ -30,7 +36,7 @@ type ScmProvider interface {
 	// and transform input params into valid file download URL.
 	// Params are repository, path to the file inside the repository, Git reference (branch/tag/commitId),
 	// HTTP client instance and authentication headers holder struct
-	detect(ctx context.Context, repoUrl, filepath, ref string, client *req.Client, auth HeaderStruct) (bool, string, error)
+	detect(ctx context.Context, repoUrl, filepath, ref string, client *req.Client, auth HeaderStruct) (bool, string, DetectError)
 }
 
 // ScmProviders is the list of detectors that are tried on an SCM URL.
@@ -44,16 +50,16 @@ func init() {
 	}
 }
 
-func detect(ctx context.Context, repoUrl, filepath, ref string, client *req.Client, auth HeaderStruct) (string, error) {
+func detect(ctx context.Context, repoUrl, filepath, ref string, client *req.Client, auth HeaderStruct) (string, DetectError) {
 	for _, d := range ScmProviders {
-		ok, resultUrl, err := d.detect(ctx, repoUrl, filepath, ref, client, auth)
-		if err != nil {
-			return "", fmt.Errorf("detection failed: %w", err)
-		}
+		ok, resultUrl, detectError := d.detect(ctx, repoUrl, filepath, ref, client, auth)
 		if !ok {
 			continue
 		}
-		return resultUrl, nil
+		if detectError.Error != nil {
+			return "", detectError
+		}
+		return resultUrl, detectError
 	}
-	return "", fmt.Errorf("%w: %s for %s", invalidSourceError, repoUrl, filepath)
+	return "", DetectError{StatusCode: http.StatusInternalServerError, Error: fmt.Errorf("%w: %s for %s", invalidSourceError, repoUrl, filepath)}
 }

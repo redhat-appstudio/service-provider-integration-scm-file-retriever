@@ -20,6 +20,7 @@ import (
 	"github.com/imroc/req/v3"
 	"go.uber.org/zap"
 	"io"
+	"net/http"
 	"time"
 )
 
@@ -39,15 +40,15 @@ type ErrorMessage struct {
 // and optional Git reference for the branch/tags/commitIds.
 // Function type parameter is a callback used when user authentication is needed in order to retrieve the file,
 // that function will be called with the URL to OAuth service, where user need to be redirected.
-func (g *GitFile) GetFileContents(ctx context.Context, namespace, repoUrl, filepath, ref string, callback func(ctx context.Context, url string)) (io.ReadCloser, error) {
+func (g *GitFile) GetFileContents(ctx context.Context, namespace, repoUrl, filepath, ref string, callback func(ctx context.Context, url string)) (int, io.ReadCloser, error) {
 	headerStruct, err := buildAuthHeader(ctx, namespace, repoUrl, g.fetcher, callback)
 	if err != nil {
-		return nil, err
+		return http.StatusInternalServerError, nil, err
 	}
 
-	fileUrl, err := detect(ctx, repoUrl, filepath, ref, g.client, *headerStruct)
-	if err != nil {
-		return nil, err
+	fileUrl, detectError := detect(ctx, repoUrl, filepath, ref, g.client, *headerStruct)
+	if detectError.Error != nil {
+		return detectError.StatusCode, nil, detectError.Error
 	}
 
 	request := g.client.R().SetContext(ctx).SetBearerAuthToken(headerStruct.Authorization)
@@ -57,18 +58,18 @@ func (g *GitFile) GetFileContents(ctx context.Context, namespace, repoUrl, filep
 		Get(fileUrl)
 	if err != nil {
 		zap.L().Error("Failed to make GitHub URL call", zap.Error(err))
-		return nil, fmt.Errorf("GitHub file call failed: %w", err)
+		return resp.StatusCode, nil, fmt.Errorf("GitHub file call failed: %w", err)
 	}
 	statusCode := resp.StatusCode
 	zap.L().Debug(fmt.Sprintf(
 		"GitHub file call response code: %d", statusCode))
 	if resp.IsSuccess() {
-		return io.NopCloser(bytes.NewBuffer(resp.Bytes())), nil
+		return resp.StatusCode, io.NopCloser(bytes.NewBuffer(resp.Bytes())), nil
 	}
 	if resp.IsError() {
-		return nil, fmt.Errorf("file request failed. Status code: %d. Message: %s", statusCode, errMsg.Message)
+		return resp.StatusCode, nil, fmt.Errorf("file request failed. Status code: %d. Message: %s", statusCode, errMsg.Message)
 	}
-	return nil, fmt.Errorf("file request returned an unknown result. Status code: %d. Content: %s", statusCode, resp.Dump())
+	return resp.StatusCode, nil, fmt.Errorf("file request returned an unknown result. Status code: %d. Content: %s", statusCode, resp.Dump())
 
 }
 

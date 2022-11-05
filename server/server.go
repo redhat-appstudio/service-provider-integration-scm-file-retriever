@@ -81,13 +81,13 @@ func GetFileHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	ctx := context.TODO()
-	content, err := gitfile.Default().GetFileContents(ctx, namespace, repoUrl, filepath, ref, func(ctx context.Context, url string) {
+	status, content, err := gitfile.Default().GetFileContents(ctx, namespace, repoUrl, filepath, ref, func(ctx context.Context, url string) {
 		message := websocket.Message{Type: 777, Body: url, ClientID: pageId}
 		pool.SendMessage <- message
 	})
 
 	if err != nil {
-		respondWithError(w, http.StatusInternalServerError, err.Error())
+		respondWithError(w, status, err.Error())
 		return
 	}
 
