@@ -16,6 +16,7 @@ package gitfile
 import (
 	"bytes"
 	"context"
+	"errors"
 	"fmt"
 	"github.com/imroc/req/v3"
 	"go.uber.org/zap"
@@ -25,6 +26,11 @@ import (
 )
 
 const defaultHttpTimeout = 5 * time.Second
+
+var (
+	failedFileRequestError     = errors.New("file request failed")
+	undefinedFileResponseError = errors.New("file request returned an unknown result")
+)
 
 type GitFile struct {
 	fetcher TokenFetcher
@@ -67,9 +73,9 @@ func (g *GitFile) GetFileContents(ctx context.Context, namespace, repoUrl, filep
 		return resp.StatusCode, io.NopCloser(bytes.NewBuffer(resp.Bytes())), nil
 	}
 	if resp.IsError() {
-		return resp.StatusCode, nil, fmt.Errorf("file request failed. Status code: %d. Message: %s", statusCode, errMsg.Message)
+		return resp.StatusCode, nil, fmt.Errorf("%w. Status code: %d. Message: %s", failedFileRequestError, statusCode, errMsg.Message)
 	}
-	return resp.StatusCode, nil, fmt.Errorf("file request returned an unknown result. Status code: %d. Content: %s", statusCode, resp.Dump())
+	return resp.StatusCode, nil, fmt.Errorf("%w. Status code: %d. Content: %s", undefinedFileResponseError, statusCode, resp.Dump())
 
 }
 
