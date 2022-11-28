@@ -5,7 +5,7 @@ go 1.18
 require (
 	github.com/gorilla/mux v1.8.0
 	github.com/gorilla/websocket v1.4.2
-	github.com/redhat-appstudio/service-provider-integration-scm-file-retriever v0.8.3-0.20221106090125-411d3850b1ab
+	github.com/redhat-appstudio/service-provider-integration-scm-file-retriever v0.8.3-0.20221128131835-edda32b65708
 )
 
 require (
@@ -27,8 +27,7 @@ require (
 	github.com/google/gofuzz v1.1.0 // indirect
 	github.com/hashicorp/errwrap v1.1.0 // indirect
 	github.com/hashicorp/go-multierror v1.1.1 // indirect
-	github.com/imroc/req v0.3.2 // indirect
-	github.com/imroc/req/v3 v3.25.0 // indirect
+	github.com/imroc/req/v3 v3.26.0 // indirect
 	github.com/josharian/intern v1.0.0 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/lucas-clemente/quic-go v0.28.1 // indirect
