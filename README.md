@@ -68,7 +68,11 @@ If you want to use your custom server image, update the image name or tag at `se
 #### Enabling CORS for demo page
 
 If it is planned to use test/demo page of the file retriever server, it's URL must be added
-as the allowed origin on OAuth service via argument or enviromnent variable
+as the allowed origin on OAuth service via argument or environment variable. 
+Example:
+```
+kubectl set env deployment/spi-oauth-service ALLOWEDORIGINS=https://console.dev.redhat.com,https://file-retriever-server-service-spi-system.<cluster-url>.com  -n spi-system
+```
 (see [OAuth service configuration parameters](https://github.com/redhat-appstudio/service-provider-integration-operator/blob/main/docs/ADMIN.md#oauth-service-configuration-parameters) for more details).
 
 
