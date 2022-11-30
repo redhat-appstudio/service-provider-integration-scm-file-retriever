@@ -64,6 +64,14 @@ If you want to use your custom server image, update the image name or tag at `se
 1. deploy SPI (https://github.com/redhat-appstudio/service-provider-integration-operator)
 2. deploy scm-file-retriever-server `kubectl apply -k server/config/openshift`
 3. server url will be available at `https://file-retriever-server-service-spi-system.<cluster-url>`
+
+#### Enabling CORS for demo page
+
+If it is planned to use test/demo page of the file retriever server, it's URL must be added
+as the allowed origin on OAuth service via argument or enviromnent variable
+(see [OAuth service configuration parameters](https://github.com/redhat-appstudio/service-provider-integration-operator/blob/main/docs/ADMIN.md#oauth-service-configuration-parameters) for more details).
+
+
    
 ### Known peculiarities
 The most common problem which may occur during file resolving, is that configured OAuth application is not approved to access
