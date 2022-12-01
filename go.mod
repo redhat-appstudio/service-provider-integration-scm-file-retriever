@@ -3,7 +3,7 @@ module github.com/redhat-appstudio/service-provider-integration-scm-file-retriev
 go 1.18
 
 require (
-	github.com/imroc/req/v3 v3.26.0
+	github.com/imroc/req/v3 v3.26.3
 	github.com/jarcoal/httpmock v1.2.0
 	github.com/redhat-appstudio/service-provider-integration-operator v0.8.2
 	github.com/stretchr/testify v1.8.1
