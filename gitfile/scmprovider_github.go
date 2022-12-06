@@ -74,7 +74,7 @@ func (d *GitHubScmProvider) detect(ctx context.Context, repoUrl, filepath, ref s
 	if resp.IsError() {
 		switch statusCode {
 		case 400:
-			return true, "", InternalError{fmt.Sprintf("GitHub API request has wrong format"), nil}
+			return true, "", InternalError{"GitHub API request has wrong format", nil}
 		case 401:
 		case 402:
 		case 403:

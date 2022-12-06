@@ -70,7 +70,7 @@ func (g *GitFile) GetFileContents(ctx context.Context, namespace, repoUrl, filep
 	if resp.IsError() {
 		switch resp.StatusCode {
 		case 400:
-			return nil, InternalError{fmt.Sprintf("File content request has wrong format"), nil}
+			return nil, InternalError{"File content request has wrong format", nil}
 		case 401:
 		case 402:
 		case 403:
