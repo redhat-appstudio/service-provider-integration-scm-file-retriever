@@ -15,16 +15,11 @@ package gitfile
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"regexp"
 
 	"github.com/imroc/req/v3"
 	"go.uber.org/zap"
-)
-
-var (
-	unexpectedStatusCodeError = errors.New("unexpected status code from GitHub API")
 )
 
 type GithubFile struct {
@@ -59,23 +54,37 @@ func (d *GitHubScmProvider) detect(ctx context.Context, repoUrl, filepath, ref s
 	}
 
 	var file GithubFile
-	var errMsg ErrorMessage
+	var errMsg errorMessage
 	resp, err := request.
 		SetResult(&file).
 		SetError(&errMsg).
 		Get(fmt.Sprintf(GithubAPITemplate, m["repoUser"], m["repoName"], filepath))
 	if err != nil {
 		zap.L().Error("Failed to make GitHub API call", zap.Error(err))
-		return true, "", fmt.Errorf("GitHub API call failed: %w", err)
+		return true, "", InternalError{fmt.Sprintf("GitHub API request failed: %s", err.Error()), err}
 	}
 	statusCode := resp.StatusCode
 	zap.L().Debug(fmt.Sprintf(
-		"GitHub API call response code: %d", statusCode))
-	if !resp.IsSuccess() {
-		return true, "", fmt.Errorf("%w: %d. Response: %s", unexpectedStatusCodeError, statusCode, resp.String())
+		"GitHub API request response code: %d", statusCode))
+	// 2xx
+	if resp.IsSuccess() {
+		return true, file.DownloadUrl, nil
 	}
+	// 4xx and 5xx
 	if resp.IsError() {
-		return true, "", fmt.Errorf("%w: %d. Error message: %s", unexpectedStatusCodeError, statusCode, errMsg.Message)
+		switch statusCode {
+		case 400:
+			return true, "", InternalError{fmt.Sprintf("GitHub API request has wrong format"), nil}
+		case 401:
+		case 402:
+		case 403:
+		case 404:
+			return true, "", UnauthorizedError{}
+		default:
+			return true, "", InternalError{fmt.Sprintf("Unexpected status code returned from GitHub API: %d. Message: %s", statusCode, errMsg.Message), nil}
+		}
 	}
-	return true, file.DownloadUrl, nil
+	// strange cases like 3xx etc
+	return true, "", InternalError{fmt.Sprintf("GitHub API request returned unexpected code: %d. Content dump: %s", statusCode, resp.Dump()), nil}
+
 }

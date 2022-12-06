@@ -17,10 +17,11 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/imroc/req/v3"
-	"github.com/jarcoal/httpmock"
 	"net/http"
 	"testing"
+
+	"github.com/imroc/req/v3"
+	"github.com/jarcoal/httpmock"
 
 	"github.com/stretchr/testify/assert"
 )
