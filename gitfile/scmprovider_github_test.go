@@ -16,6 +16,7 @@ package gitfile
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"testing"
@@ -131,6 +132,7 @@ func TestGetUnexistingFile(t *testing.T) {
 	if err == nil {
 		t.Error("error expected")
 	}
+	assert.True(t, errors.Is(err, UnauthorizedError{}))
 	assert.Equal(t, "detection failed: Request to SCM server was unauthorized or resource is not found", fmt.Sprint(err))
 
 }
