@@ -18,6 +18,7 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"net/http"
 	"time"
 
 	"go.uber.org/zap"
@@ -69,9 +70,9 @@ func (g *GitFile) GetFileContents(ctx context.Context, namespace, repoUrl, filep
 	// >= 400
 	if resp.IsError() {
 		switch resp.StatusCode {
-		case 400:
+		case http.StatusBadRequest:
 			return nil, InternalError{"File content request has wrong format", nil}
-		case 401, 402, 403, 404:
+		case http.StatusUnauthorized, http.StatusForbidden, http.StatusNotFound:
 			return nil, UnauthorizedError{}
 		default:
 			return nil, InternalError{fmt.Sprintf("Unexpected status code returned when make file content request: %d. Message: %s", resp.StatusCode, errMsg.Message), nil}

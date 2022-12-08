@@ -16,6 +16,7 @@ package gitfile
 import (
 	"context"
 	"fmt"
+	"net/http"
 	"regexp"
 
 	"github.com/imroc/req/v3"
@@ -73,9 +74,9 @@ func (d *GitHubScmProvider) detect(ctx context.Context, repoUrl, filepath, ref s
 	// 4xx and 5xx
 	if resp.IsError() {
 		switch statusCode {
-		case 400:
+		case http.StatusBadRequest:
 			return true, "", InternalError{"GitHub API request has wrong format", nil}
-		case 401, 402, 403, 404:
+		case http.StatusUnauthorized, http.StatusForbidden, http.StatusNotFound:
 			return true, "", UnauthorizedError{}
 		default:
 			return true, "", InternalError{fmt.Sprintf("Unexpected status code returned from GitHub API: %d. Message: %s", statusCode, errMsg.Message), nil}
