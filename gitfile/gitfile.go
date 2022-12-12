@@ -59,7 +59,7 @@ func (g *GitFile) GetFileContents(ctx context.Context, namespace, repoUrl, filep
 		Get(fileUrl)
 	if err != nil {
 		zap.L().Error("Failed to make file content request", zap.Error(err))
-		return nil, InternalError{fmt.Sprintf("File content request failed: %s", err.Error()), err}
+		return nil, &InternalError{fmt.Sprintf("File content request failed: %s", err.Error()), err}
 	}
 	zap.L().Debug(fmt.Sprintf(
 		"GitHub file call response code: %d", resp.GetStatusCode()))
@@ -71,15 +71,15 @@ func (g *GitFile) GetFileContents(ctx context.Context, namespace, repoUrl, filep
 	if resp.IsError() {
 		switch resp.StatusCode {
 		case http.StatusBadRequest:
-			return nil, InternalError{"File content request has wrong format", nil}
+			return nil, &InternalError{"File content request has wrong format", nil}
 		case http.StatusUnauthorized, http.StatusForbidden, http.StatusNotFound:
-			return nil, UnauthorizedError{}
+			return nil, &UnauthorizedError{}
 		default:
-			return nil, InternalError{fmt.Sprintf("Unexpected status code returned when make file content request: %d. Message: %s", resp.StatusCode, errMsg.Message), nil}
+			return nil, &InternalError{fmt.Sprintf("Unexpected status code returned when make file content request: %d. Message: %s", resp.StatusCode, errMsg.Message), nil}
 		}
 	}
 	// strange cases like 3xx etc
-	return nil, InternalError{fmt.Sprintf("File content request returned unexpected code: %d. Content dump: %s", resp.StatusCode, resp.Dump()), nil}
+	return nil, &InternalError{fmt.Sprintf("File content request returned unexpected code: %d. Content dump: %s", resp.StatusCode, resp.Dump()), nil}
 }
 
 // New creates a new *GitFile instance

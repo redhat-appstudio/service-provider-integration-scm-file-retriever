@@ -18,7 +18,7 @@ import "fmt"
 type UnauthorizedError struct {
 }
 
-func (e UnauthorizedError) Error() string {
+func (e *UnauthorizedError) Error() string {
 	return "Request to SCM server was unauthorized or resource is not found"
 }
 
@@ -28,7 +28,7 @@ type InvalidRequestError struct {
 	filePath string
 }
 
-func (e InvalidRequestError) Error() string {
+func (e *InvalidRequestError) Error() string {
 	return fmt.Sprintf("%s. Repository URL: %s, file path: %s", e.message, e.repoUrl, e.filePath)
 }
 
@@ -37,6 +37,6 @@ type InternalError struct {
 	cause   error
 }
 
-func (e InternalError) Error() string {
+func (e *InternalError) Error() string {
 	return "Service internal error happened. Base message: " + e.message
 }

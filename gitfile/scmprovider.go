@@ -51,5 +51,5 @@ func detect(ctx context.Context, repoUrl, filepath, ref string, client *req.Clie
 		}
 		return resultUrl, nil
 	}
-	return "", InvalidRequestError{"Unable to find provider for the given request", repoUrl, filepath}
+	return "", &InvalidRequestError{"Unable to find provider for the given request", repoUrl, filepath}
 }

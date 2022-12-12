@@ -62,7 +62,7 @@ func (d *GitHubScmProvider) detect(ctx context.Context, repoUrl, filepath, ref s
 		Get(fmt.Sprintf(GithubAPITemplate, m["repoUser"], m["repoName"], filepath))
 	if err != nil {
 		zap.L().Error("Failed to make GitHub API call", zap.Error(err))
-		return true, "", InternalError{fmt.Sprintf("GitHub API request failed: %s", err.Error()), err}
+		return true, "", &InternalError{fmt.Sprintf("GitHub API request failed: %s", err.Error()), err}
 	}
 	statusCode := resp.StatusCode
 	zap.L().Debug(fmt.Sprintf(
@@ -75,14 +75,14 @@ func (d *GitHubScmProvider) detect(ctx context.Context, repoUrl, filepath, ref s
 	if resp.IsError() {
 		switch statusCode {
 		case http.StatusBadRequest:
-			return true, "", InternalError{"GitHub API request has wrong format", nil}
+			return true, "", &InternalError{"GitHub API request has wrong format", nil}
 		case http.StatusUnauthorized, http.StatusForbidden, http.StatusNotFound:
-			return true, "", UnauthorizedError{}
+			return true, "", &UnauthorizedError{}
 		default:
-			return true, "", InternalError{fmt.Sprintf("Unexpected status code returned from GitHub API: %d. Message: %s", statusCode, errMsg.Message), nil}
+			return true, "", &InternalError{fmt.Sprintf("Unexpected status code returned from GitHub API: %d. Message: %s", statusCode, errMsg.Message), nil}
 		}
 	}
 	// strange cases like 3xx etc
-	return true, "", InternalError{fmt.Sprintf("GitHub API request returned unexpected code: %d. Content dump: %s", statusCode, resp.Dump()), nil}
+	return true, "", &InternalError{fmt.Sprintf("GitHub API request returned unexpected code: %d. Content dump: %s", statusCode, resp.Dump()), nil}
 
 }

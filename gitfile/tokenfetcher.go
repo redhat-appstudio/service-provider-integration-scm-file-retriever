@@ -31,7 +31,7 @@ type TokenFetcher interface {
 func buildAuthHeader(ctx context.Context, namespace, repoUrl string, fetcher TokenFetcher, loginCallback func(ctx context.Context, url string)) (*HeaderStruct, error) {
 	headerStruct, err := fetcher.BuildHeader(ctx, namespace, repoUrl, loginCallback)
 	if err != nil {
-		return nil, InternalError{err.Error(), err}
+		return nil, &InternalError{err.Error(), err}
 	}
 	return headerStruct, nil
 }
