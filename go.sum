@@ -199,8 +199,8 @@ github.com/prometheus/common v0.0.0-20180801064454-c7de2306084e/go.mod h1:daVV7q
 github.com/prometheus/common v0.37.0 h1:ccBbHCgIiT9uSoFY0vX8H3zsNR5eLt17/RQLUvn8pXE=
 github.com/prometheus/procfs v0.0.0-20180725123919-05ee40e3a273/go.mod h1:c3At6R/oaqEKCNdg8wHV1ftS6bRYblBhIjjI8uT2IGk=
 github.com/prometheus/procfs v0.8.0 h1:ODq8ZFEaYeCaZOJlZZdJA2AbQR98dSHSM1KW/You5mo=
-github.com/redhat-appstudio/service-provider-integration-operator v0.8.3 h1:Q2mzasHJr3PmXjPscUCx6JDH9Ku39Y2h3T53zb5MU0o=
-github.com/redhat-appstudio/service-provider-integration-operator v0.8.3/go.mod h1:o4C4n36pkQhmICnySJyAvmyj/SD97wwvQNkb+Rhiimg=
+github.com/redhat-appstudio/service-provider-integration-operator v0.9.0 h1:7M1Wl3QRZkeTOHEfvNPWxT7xlLLDgcBAJR45/cnSOv0=
+github.com/redhat-appstudio/service-provider-integration-operator v0.9.0/go.mod h1:ESNBeMgt6icSixPvz7rHNI2t7Lz+S7HlL/4e33MLwAI=
 github.com/rogpeppe/go-internal v1.6.1/go.mod h1:xXDCJY+GAPziupqXw64V24skbSoqbTEfhy4qGm1nDQc=
 github.com/rogpeppe/go-internal v1.6.2 h1:aIihoIOHCiLZHxyoNQ+ABL4NKhFTgKLBdMLyEAh98m0=
 github.com/rogpeppe/go-internal v1.6.2/go.mod h1:xXDCJY+GAPziupqXw64V24skbSoqbTEfhy4qGm1nDQc=

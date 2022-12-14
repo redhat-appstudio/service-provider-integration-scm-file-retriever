@@ -5,7 +5,7 @@ go 1.18
 require (
 	github.com/imroc/req/v3 v3.26.0
 	github.com/jarcoal/httpmock v1.2.0
-	github.com/redhat-appstudio/service-provider-integration-operator v0.8.3
+	github.com/redhat-appstudio/service-provider-integration-operator v0.9.0
 	github.com/stretchr/testify v1.8.1
 	go.uber.org/zap v1.24.0
 	k8s.io/api v0.25.0
