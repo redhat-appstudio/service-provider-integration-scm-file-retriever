@@ -5,7 +5,7 @@ Library for downloading files from a source code management sites
 
 ### About
 
-:warning: This repository is going to be deprecated in close future in favour of 
+:warning: This repository is going to be deprecated in close future in favor of 
 [SpiFileContentRequest CR](https://github.com/redhat-appstudio/service-provider-integration-operator#spifilecontentrequest).
 That is a k8s way to get the same functionality as this go-based library is providing for [example](https://github.com/redhat-appstudio/service-provider-integration-operator/blob/main/docs/USER.md#retrieving-file-content-from-scm-repository). 
 
