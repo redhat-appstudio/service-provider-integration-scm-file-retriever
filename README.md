@@ -5,6 +5,11 @@ Library for downloading files from a source code management sites
 
 ### About
 
+:warning: This repository is going to be deprecated in close future in favor of 
+[SpiFileContentRequest CR](https://github.com/redhat-appstudio/service-provider-integration-operator#spifilecontentrequest).
+That is a k8s way to get the same functionality as this go-based library is providing for [example](https://github.com/redhat-appstudio/service-provider-integration-operator/blob/main/docs/USER.md#retrieving-file-content-from-scm-repository). 
+
+
 This repository contains a library for retrieving files from various source management systems using a repository and file paths as the primary form of input.
 
 The main idea is to allow users to download files from a different SCM providers without the necessity of knowing their APIs and/or download endpoints,
