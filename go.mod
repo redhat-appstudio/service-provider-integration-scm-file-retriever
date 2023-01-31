@@ -3,7 +3,7 @@ module github.com/redhat-appstudio/service-provider-integration-scm-file-retriev
 go 1.18
 
 require (
-	github.com/imroc/req/v3 v3.26.0
+	github.com/imroc/req/v3 v3.31.1
 	github.com/jarcoal/httpmock v1.2.0
 	github.com/redhat-appstudio/service-provider-integration-operator v0.8.3
 	github.com/stretchr/testify v1.8.1
@@ -37,13 +37,12 @@ require (
 	github.com/josharian/intern v1.0.0 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/kr/pretty v0.3.0 // indirect
-	github.com/lucas-clemente/quic-go v0.28.1 // indirect
 	github.com/mailru/easyjson v0.7.6 // indirect
 	github.com/marten-seemann/qpack v0.2.1 // indirect
 	github.com/marten-seemann/qtls-go1-16 v0.1.5 // indirect
 	github.com/marten-seemann/qtls-go1-17 v0.1.2 // indirect
-	github.com/marten-seemann/qtls-go1-18 v0.1.2 // indirect
-	github.com/marten-seemann/qtls-go1-19 v0.1.0-beta.1 // indirect
+	github.com/marten-seemann/qtls-go1-18 v0.1.3 // indirect
+	github.com/marten-seemann/qtls-go1-19 v0.1.1 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.2 // indirect
 	github.com/munnerz/goautoneg v0.0.0-20191010083416-a7dc8b61c822 // indirect
